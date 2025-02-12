@@ -2,7 +2,9 @@
 
 A lightweight [crystal](https://crystal-lang.org) library for composing html.
 
-Hypertext internally wraps around a `String::Builder and offers a DSL to emit HTML elements ([see Usage below](#usage)).
+Hypertext offers a DSL to emit HTML text ([see Usage below](#usage)).
+The code of the block given to `hypertext` is run in a scope (`with ... yield`) which offers methods for all existing html tags. The attributes are given as named parameters (**args) whereas the elements children are created inside an optional given block.
+
 Hypertext attaches its current output context to the local fiber, so that one can call other
 hypertext emitting code (AKA partials or components) for composition.
 
@@ -56,13 +58,26 @@ def my_form_component(url, active)
     form(method: "POST", action: url){
       input(type: "text", name: "name")
       input(type: "checkbox", checked: false)
-      button(type: "submit", class: ["button", ("greyed" if !active)]) { text("send") }
+      button(
+        type: "submit", 
+        class: [
+          "button", 
+          ("greyed" if !active)
+        ]
+      ) { 
+        text("send") 
+      }
     }
   end
 end
 
 puts create_html
 ```
+outputs 
+```
+<!DOCTYPE html><html><head><meta charset="utf8"><link href="style.css" rel="stylesheet" type="text/css"><title>page title</title></head><body><section class="head"><h1>Here is your form ...</h1></section><section class="main"><form method="POST" action="/action/url"><input type="text" name="name"><input type="checkbox"><button type="submit" class="button greyed">send</button></form></section></body></html>
+```
+
 
 ## Contributing
 
